@@ -1,4 +1,4 @@
-package ru.romanoval.testKotlin
+package ru.romanoval.testKotlin.model
 
 import java.io.Serializable
 

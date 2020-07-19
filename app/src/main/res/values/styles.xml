@@ -7,14 +7,23 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="CustomTheme" parent="Theme.MaterialComponents.DayNight">
+    <style name="CustomTheme" parent="Theme.MaterialComponents.NoActionBar">
+
+    <item name="colorPrimary">@color/colorPrimaryCustom</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDarkCustom</item>
+    <item name="colorAccent">@color/colorAccentCustom</item>
+
+
+</style>
+
+    <style name="CustomTheme1" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
 
         <item name="colorPrimary">@color/colorPrimaryCustom</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkCustom</item>
         <item name="colorAccent">@color/colorAccentCustom</item>
+        <item name="toolbarStyle">@style/Widget.AppCompat.Toolbar</item>
 
     </style>
-
 
 
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_navigation_graph"
+    app:startDestination="@id/mainFragment2">
+    <fragment
+        android:id="@+id/mainFragment2"
+        android:name="ru.romanoval.testKotlin.fragments.MainFragment"
+        android:label="My habits"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment2_to_addEditFragment"
+            app:destination="@id/addEditFragment" />
+        <argument
+            android:name="EditOrAddedHabit"
+            app:argType="ru.romanoval.testKotlin.model.Habit"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_mainFragment2_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditFragment"
+        android:name="ru.romanoval.testKotlin.fragments.AddEditFragment"
+        android:label="Редактированиие привычки"
+        tools:layout="@layout/fragment_add_edit" >
+        <argument
+            android:name="habitToEdit"
+            app:argType="ru.romanoval.testKotlin.model.Habit"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_addEditFragment_to_mainFragment2"
+            app:destination="@id/mainFragment2"/>
+    </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="ru.romanoval.testKotlin.fragments.AboutFragment"
+        android:label="О приложении"
+        tools:layout="@layout/fragment_about" />
+</navigation>
