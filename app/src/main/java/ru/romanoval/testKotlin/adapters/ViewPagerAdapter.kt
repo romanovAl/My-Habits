@@ -9,7 +9,7 @@ import ru.romanoval.testKotlin.fragments.FragmentBadHabits
 import ru.romanoval.testKotlin.fragments.FragmentGoodHabits
 
 
-class MainActivityViewPager2Adapter (fragment: Fragment) : FragmentStateAdapter(fragment) {
+class ViewPagerAdapter (fragment: Fragment) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = 2
 

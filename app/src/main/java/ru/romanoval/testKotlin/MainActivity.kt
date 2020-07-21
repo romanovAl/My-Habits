@@ -2,19 +2,20 @@ package ru.romanoval.testKotlin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.romanoval.testKotlin.adapters.RecyclerAdapter
 import ru.romanoval.testKotlin.fragments.*
 import ru.romanoval.testKotlin.model.Habit
+import ru.romanoval.testKotlin.viewModels.MainActivityViewModel
 
 
 class MainActivity : AppCompatActivity(),
@@ -24,44 +25,38 @@ class MainActivity : AppCompatActivity(),
     AddEditFragment.AddEditFragmentCallback{
 
 
-    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var curNavHostFragment: NavHostFragment
 
     private lateinit var navController: NavController
-
-
 
     override fun onCreate(savedInstanceState: Bundle?)   {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        navHostFragment = supportFragmentManager.findFragmentById(R.id.mainFragment2) as NavHostFragment
-        navController = navHostFragment.navController
+        curNavHostFragment = supportFragmentManager.findFragmentById(R.id.mainFragment2) as NavHostFragment
+
+        navController = curNavHostFragment.navController
+
+        navController.setGraph(R.navigation.my_navigation_graph)
 
         val appBarCompat = AppBarConfiguration(navController.graph, navigationDrawerLayout)
 
         navigationView.setupWithNavController(navController)
 
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-
         toolbar.setupWithNavController(navController, appBarCompat)
 
-//        NavigationUI.setupActionBarWithNavController(this,navController,navigationDrawerLayout)
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        println("onSaveInstanceState")
+        outState.putBundle("nav", navController.saveState())
+    }
 
-        if (savedInstanceState != null){
-
-            val host = NavHostFragment.create(R.navigation.my_navigation_graph)
-            val fragment = MainFragment.newInstance()
-
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.mainFragment2, host)
-                .setPrimaryNavigationFragment(host)
-                .commit()
-
-        }
-
-
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        println("onRestoreInstanceState")
+        navController.restoreState(savedInstanceState.getBundle("nav"))
     }
 
     override fun onBackPressed() {
@@ -70,8 +65,8 @@ class MainActivity : AppCompatActivity(),
         }else{
             super.onBackPressed()
         }
-
     }
+
 
     override fun fabSetOnClick() {
         navController.navigate(R.id.action_mainFragment2_to_addEditFragment)
@@ -87,6 +82,8 @@ class MainActivity : AppCompatActivity(),
     override fun fabOnClickToMainFragment(habit: Habit) {
         val action = AddEditFragmentDirections.actionAddEditFragmentToMainFragment2()
 
+        println("От така хуйня малята ${supportFragmentManager.findFragmentById(R.id.addEditFragment).toString()}")
+
         action.editOrAddedHabit = habit
         navController.navigate(action)
     }
@@ -94,6 +91,7 @@ class MainActivity : AppCompatActivity(),
     override fun setTitleToAdd() {
         toolbar.title = "Добавление привычки"
     }
+
 
 
 }

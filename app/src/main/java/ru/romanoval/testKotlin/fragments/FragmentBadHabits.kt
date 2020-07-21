@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.fragment_good_habits.*
 import ru.romanoval.testKotlin.model.Habit
 import ru.romanoval.testKotlin.adapters.RecyclerAdapter
 import ru.romanoval.testKotlin.R
+import ru.romanoval.testKotlin.model.Data
 
 
 class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits){
@@ -40,40 +41,7 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val items = listOf(
-            Habit(
-                "Привычка плохая 1",
-                "Описание",
-                "Высокий",
-                false,
-                "Каждый день",
-                "#757de8",
-                12
-            )
-            ,
-            Habit(
-                "Привычка плохая 2",
-                "Описание2",
-                "Высокий",
-                false,
-                "Каждый день",
-                "#757de8",
-                12
-            ),
-            Habit(
-                "Привычка плохая 3",
-                "Описание3",
-                "Высокий",
-                false,
-                "Каждый день",
-                "#757de8",
-                12
-            )
-        ).toMutableList()
-
-        val items2 = ArrayList(items)
-
-        val adapter = context?.let { RecyclerAdapter(items2, it) }
+        val adapter = context?.let { RecyclerAdapter(Data.getBadHabits(), it) }
         recyclerBadHabits.adapter = adapter
 
         fabBadHabits.setColorFilter(Color.argb(255, 255, 255, 255))
