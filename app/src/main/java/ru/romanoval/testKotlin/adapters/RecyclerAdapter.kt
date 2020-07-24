@@ -1,6 +1,5 @@
 package ru.romanoval.testKotlin.adapters
 
-import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +11,15 @@ import kotlinx.android.synthetic.main.main_recycler_element.view.*
 import ru.romanoval.testKotlin.model.Habit
 import ru.romanoval.testKotlin.R
 import ru.romanoval.testKotlin.fragments.MainFragmentDirections
+import ru.romanoval.testKotlin.utils.Lists
 
 
-class RecyclerAdapter(private var habits: ArrayList<Habit>, var context: Context) :
+class RecyclerAdapter(private var habits: ArrayList<Habit>) :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
+
+    private val priorities = Lists.priorities
+    private val periods = Lists.periods
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -48,17 +51,31 @@ class RecyclerAdapter(private var habits: ArrayList<Habit>, var context: Context
 
                 constraintMainRecyclerElement.setOnClickListener {
 
-                    var action =
+                    val action =
                         MainFragmentDirections.actionMainFragment2ToAddEditFragment("Редактирование привычки")
+
                     action.habitToEdit = habit
+
                     Navigation.findNavController(it).navigate(action)
                 }
 
 
                 habitNameRecyclerElement.text = habit.name
                 habitDescriptionRecyclerElement.text = habit.description
-                habitPeriodRecyclerElement.text = habit.period
-                habitPriorityRecyclerElement.text = "${habit.priority} приоритет"
+                habitPeriodRecyclerElement.text = when(habit.period){
+                    Habit.Period.ANHOUR -> periods[0]
+                    Habit.Period.ADAY -> periods[1]
+                    Habit.Period.AWEEK -> periods[2]
+                    Habit.Period.AMMONTH -> periods[3]
+                    Habit.Period.ANYEAR -> periods[4]
+                    Habit.Period.NOPERIOD -> ""
+                }
+                habitPriorityRecyclerElement.text = when(habit.priority){
+                    Habit.Priority.HIGH -> priorities[0]
+                    Habit.Priority.MEDIUM -> priorities[1]
+                    Habit.Priority.LOW -> priorities[2]
+                    Habit.Priority.NOPRIORITY -> ""
+                }
 
                 habitTypeRecyclerElement.text = if (habit.type) {
                     "Хорошая"

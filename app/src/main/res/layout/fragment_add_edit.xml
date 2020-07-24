@@ -28,7 +28,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/habitNameAddAndEdit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,7 +50,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/habitDescriptionAddAndEdit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,7 +73,7 @@
                 android:id="@+id/habitPriorityAddAndEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:inputType="textAutoComplete" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -118,7 +120,7 @@
                 android:id="@+id/habitPeriodAddAndEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none" />
+                android:inputType="textAutoComplete"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -141,7 +143,7 @@
                 android:id="@+id/habitDoneAddEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:inputType="number"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -163,3 +165,5 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
+
+

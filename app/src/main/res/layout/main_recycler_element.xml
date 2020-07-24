@@ -29,8 +29,6 @@
         android:background="#5A74C3"
         android:fontFamily="@font/roboto_mono"
         android:padding="8dp"
-
-        android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
