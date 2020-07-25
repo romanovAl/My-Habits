@@ -15,11 +15,10 @@ import androidx.navigation.Navigation
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottom_sheet_filter_good.*
 import kotlinx.android.synthetic.main.fragment_good_habits.*
-import ru.romanoval.testKotlin.model.Habit
 import ru.romanoval.testKotlin.adapters.RecyclerAdapter
 import ru.romanoval.testKotlin.R
-import ru.romanoval.testKotlin.ui.HabitsViewModel
-import ru.romanoval.testKotlin.utils.InjectorUtils
+import ru.romanoval.testKotlin.data.model.HabitRoom
+import ru.romanoval.testKotlin.ui.HabitsRoomViewModel
 
 class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
 
@@ -44,53 +43,110 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
         filterTypeSpinnerGood.text = null
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetFilterGood)
         if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
-            println("From fragment - bottomSheet state isn't collapsed, collapsing")
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
     private fun initUi() {
-        val factory = InjectorUtils.provideHabitsViewModelFactory()
-        val viewModel = ViewModelProvider(this, factory).get(HabitsViewModel::class.java)
-
-        fabGoodHabits.setColorFilter(Color.argb(255, 255, 255, 255))
 
         val filterTypes =
             listOf("По приоритету", "По периодичности", "По количеству", "Без фильтра")
-        val adapterFilterTypes = context?.let { ArrayAdapter(it, R.layout.list_item, filterTypes) }
-        (filterInputLayout.editText as? AutoCompleteTextView)?.setAdapter(adapterFilterTypes)
 
-        viewModel.getHabits().observe(viewLifecycleOwner, Observer { habits ->
-            adapter = RecyclerAdapter(habits.filter { it.type } as ArrayList<Habit>)
-            recyclerGoodHabits?.adapter = adapter
-        })
+        val viewModelRoom = ViewModelProvider(this).get(HabitsRoomViewModel::class.java)
 
-        fabGoodHabits.setOnClickListener {
-            val action =
-                MainFragmentDirections.actionMainFragment2ToAddEditFragment("Добавление привычки")
-            Navigation.findNavController(curView).navigate(action)
-        }
+        viewModelRoom.habits.observe(viewLifecycleOwner, Observer { habits ->
+            adapter = RecyclerAdapter(habits.filter { it.type } as ArrayList<HabitRoom>)
+            recyclerGoodHabits.adapter = adapter
 
-        filterFindGood.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
+            filterFindGood.addTextChangedListener(object : TextWatcher { //Поиск по имени
+                override fun afterTextChanged(p0: Editable?) {
 
-                if (p0 != null) {
+                    if (p0 != null) {
 
-                    var habits = viewModel.getHabits().value
-                    habits = habits?.filter {
-                        it.name.contains(p0.toString(), ignoreCase = true)
-                    } as ArrayList<Habit>
+                        val filteredHabits: ArrayList<HabitRoom> = habits.filter {
+                            it.name.contains(p0.toString(), ignoreCase = true)
+                        } as ArrayList<HabitRoom>
 
-                    val adapter = RecyclerAdapter(habits.filter { it.type } as ArrayList<Habit>)
-                    recyclerGoodHabits?.adapter = adapter
+                        val adapter =
+                            RecyclerAdapter(filteredHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits?.adapter = adapter
+                    }
+                }
+
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            })
+
+            filterSortUp.setOnClickListener { //Сортировка вверх
+                val sortedHabits = habits as ArrayList<HabitRoom>
+                when (filterTypeSpinnerGood.text.toString()) {
+
+                    filterTypes[0] -> { //Сортировка по приоритету
+                        sortedHabits.sortByDescending { it.priority.intPriority }
+                        val adapter =
+                            RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits?.adapter = adapter
+                    }
+                    filterTypes[1] -> { //Сортировка по периодичности
+                        sortedHabits.sortByDescending { it.period.intPeriod }
+                        val adapter =
+                            RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits?.adapter = adapter
+                    }
+                    filterTypes[2] -> { //Сортировка по количеству раз
+                        sortedHabits.sortByDescending { it.times }
+                        val adapter =
+                            RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits?.adapter = adapter
+                    }
                 }
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            filterSortDown.setOnClickListener {//Сортировка вниз
+                val sortedHabits = habits as ArrayList<HabitRoom>
+                when (filterTypeSpinnerGood.text.toString()) {
+                    filterTypes[0] -> { //Сортировка по приоритету
+                        sortedHabits.sortBy { it.priority.intPriority }
+                        val adapter =
+                            RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits?.adapter = adapter
+                    }
+                    filterTypes[1] -> { //Сортировка по периодичности
+                        sortedHabits.sortBy { it.period.intPeriod }
+                        val adapter =
+                            RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits?.adapter = adapter
+                    }
+                    filterTypes[2] -> { //Сортировка по количеству раз
+                        sortedHabits.sortBy { it.times }
+                        val adapter =
+                            RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits?.adapter = adapter
+                    }
+                }
+            }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            filterTypeSpinnerGood.onItemClickListener =
+                AdapterView.OnItemClickListener() { _, _, p, _ ->
+                    if (p == 3) {
+                        val sortedHabits = habits as ArrayList<HabitRoom>
+                        sortedHabits.sortBy {
+                            it.id
+                        }
+                        adapter =
+                            RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        recyclerGoodHabits.adapter = adapter
+                    }
+                }
 
         })
+
+        fabGoodHabits.setColorFilter(Color.argb(255, 255, 255, 255))
+
+        val adapterFilterTypes = context?.let { ArrayAdapter(it, R.layout.list_item, filterTypes) }
+        (filterInputLayout.editText as? AutoCompleteTextView)?.setAdapter(adapterFilterTypes)
 
         findAndSortTextView.setOnClickListener {
             val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetFilterGood)
@@ -99,57 +155,13 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
             }
         }
 
+        fabGoodHabits.setOnClickListener {
+            val action =
+                MainFragmentDirections.actionMainFragment2ToAddEditFragment("Добавление привычки")
+            Navigation.findNavController(curView).navigate(action)
+        }
+
         filterTypeSpinnerGood.keyListener = null
 
-        filterSortUp.setOnClickListener {
-            val habits = viewModel.getHabits().value
-            val sortedHabits = habits as ArrayList<Habit>
-            when (filterTypeSpinnerGood.text.toString()) {
-
-                filterTypes[0] -> { //Сортировка по приоритету
-                    sortedHabits.sortByDescending { it.priority.intPriority }
-                    val adapter =
-                        RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<Habit>)
-                    recyclerGoodHabits?.adapter = adapter
-                }
-                filterTypes[1] -> { //Сортировка по периодичности
-                    sortedHabits.sortByDescending { it.period.intPeriod }
-                    val adapter =
-                        RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<Habit>)
-                    recyclerGoodHabits?.adapter = adapter
-                }
-                filterTypes[2] -> { //Сортировка по количеству раз
-                    sortedHabits.sortByDescending { it.times }
-                    val adapter =
-                        RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<Habit>)
-                    recyclerGoodHabits?.adapter = adapter
-                }
-            }
-        }
-
-        filterSortDown.setOnClickListener {
-            val habits = viewModel.getHabits().value
-            val sortedHabits = habits as ArrayList<Habit>
-            when (filterTypeSpinnerGood.text.toString()) {
-                filterTypes[0] -> { //Сортировка по приоритету
-                    sortedHabits.sortBy { it.priority.intPriority }
-                    val adapter =
-                        RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<Habit>)
-                    recyclerGoodHabits?.adapter = adapter
-                }
-                filterTypes[1] -> { //Сортировка по периодичности
-                    sortedHabits.sortBy { it.period.intPeriod }
-                    val adapter =
-                        RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<Habit>)
-                    recyclerGoodHabits?.adapter = adapter
-                }
-                filterTypes[2] -> { //Сортировка по количеству раз
-                    sortedHabits.sortBy { it.times }
-                    val adapter =
-                        RecyclerAdapter(sortedHabits.filter { it.type } as ArrayList<Habit>)
-                    recyclerGoodHabits?.adapter = adapter
-                }
-            }
-        }
     }
 }

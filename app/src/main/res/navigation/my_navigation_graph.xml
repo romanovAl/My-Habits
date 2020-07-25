@@ -33,8 +33,8 @@
             android:name="dynamicTitle"
             app:argType="string"/>
         <argument
-            android:name="habitToEdit"
-            app:argType="ru.romanoval.testKotlin.model.Habit"
+            android:name="HabitRoomToEdit"
+            app:argType="ru.romanoval.testKotlin.data.model.HabitRoom"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>

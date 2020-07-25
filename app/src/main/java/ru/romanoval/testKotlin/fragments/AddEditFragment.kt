@@ -13,35 +13,33 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import kotlinx.android.synthetic.main.fragment_add_edit.*
 import ru.romanoval.testKotlin.R
-import ru.romanoval.testKotlin.model.Habit
-import ru.romanoval.testKotlin.ui.HabitsViewModel
-import ru.romanoval.testKotlin.utils.InjectorUtils
+import ru.romanoval.testKotlin.data.model.HabitRoom
 import ru.romanoval.testKotlin.utils.Lists
-import ru.romanoval.testKotlin.viewModels.AddEditFragmentViewModel
+import ru.romanoval.testKotlin.ui.AddEditFragmentViewModel
+import ru.romanoval.testKotlin.ui.HabitsRoomViewModel
 
 
 class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
 
-    private lateinit var viewModelHabits: HabitsViewModel
     private lateinit var viewModelAddEdit: AddEditFragmentViewModel
 
-//    private val priorities = listOf("Высокий", "Средний", "Низкий")
-//    private val periods = listOf("Каждый день", "Будние дни", "Выходные дни", "Раз в неделю", "Раз в месяц")
+    private lateinit var viewModelRoom: HabitsRoomViewModel
 
     private val priorities = Lists.priorities
     private val periods = Lists.periods
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val factory = InjectorUtils.provideHabitsViewModelFactory()
-        viewModelHabits = ViewModelProvider(this, factory).get(HabitsViewModel::class.java)
         viewModelAddEdit = ViewModelProvider(this).get(AddEditFragmentViewModel::class.java)
+
+        viewModelRoom = ViewModelProvider(this).get(HabitsRoomViewModel::class.java)
+
     }
-
-
+    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val habitToEdit = AddEditFragmentArgs.fromBundle(requireArguments()).habitToEdit
+        val habitToEdit = AddEditFragmentArgs.fromBundle(requireArguments()).habitRoomToEdit
+
 
         //Если произойдет смена конфигурации, сохранившаяся информация запишется в VM и здесь мы её заберем
         viewModelAddEdit.getSavedHabit().observe(viewLifecycleOwner, Observer { savedHabit ->
@@ -52,21 +50,25 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
                 {
                     addAndEditFab.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_check_24))
 
-                    habitPriorityAddAndEdit(when(habitToEdit.priority){
-                        Habit.Priority.HIGH -> priorities[0]
-                        Habit.Priority.MEDIUM -> priorities[1]
-                        Habit.Priority.LOW -> priorities[2]
-                        Habit.Priority.NOPRIORITY -> ""
-                    })
+                    habitPriorityAddAndEdit(
+                        when (habitToEdit.priority) {
+                            HabitRoom.Priority.HIGH -> priorities[0]
+                            HabitRoom.Priority.MEDIUM -> priorities[1]
+                            HabitRoom.Priority.LOW -> priorities[2]
+                            HabitRoom.Priority.NOPRIORITY -> ""
+                        }
+                    )
 
-                    habitPeriodAddAndEdit(when(habitToEdit.period){
-                        Habit.Period.ANHOUR -> periods[0]
-                        Habit.Period.ADAY -> periods[1]
-                        Habit.Period.AWEEK -> periods[2]
-                        Habit.Period.AMMONTH -> periods[3]
-                        Habit.Period.ANYEAR -> periods[4]
-                        Habit.Period.NOPERIOD -> ""
-                    })
+                    habitPeriodAddAndEdit(
+                        when (habitToEdit.period) {
+                            HabitRoom.Period.ANHOUR -> periods[0]
+                            HabitRoom.Period.ADAY -> periods[1]
+                            HabitRoom.Period.AWEEK -> periods[2]
+                            HabitRoom.Period.AMONTH -> periods[3]
+                            HabitRoom.Period.ANYEAR -> periods[4]
+                            HabitRoom.Period.NOPERIOD -> ""
+                        }
+                    )
 
                     habitNameAddAndEdit.setText(habitToEdit.name)
                     habitDescriptionAddAndEdit.setText(habitToEdit.description)
@@ -82,102 +84,103 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
                     init()
 
                     addAndEditFab.setOnClickListener {
-                        val newHabit = Habit(
+                        val newHabit = HabitRoom(
+                            habitToEdit.id,
                             habitNameAddAndEdit.text.toString(),
                             habitDescriptionAddAndEdit.text.toString(),
-                            when(habitPriorityAddAndEdit.text.toString()){
-                                priorities[0] -> Habit.Priority.HIGH
-                                priorities[1] -> Habit.Priority.MEDIUM
-                                priorities[2] -> Habit.Priority.LOW
-                                else -> Habit.Priority.NOPRIORITY
+                            when (habitPriorityAddAndEdit.text.toString()) {
+                                priorities[0] -> HabitRoom.Priority.HIGH
+                                priorities[1] -> HabitRoom.Priority.MEDIUM
+                                priorities[2] -> HabitRoom.Priority.LOW
+                                else -> HabitRoom.Priority.NOPRIORITY
                             },
                             radioButtonGood.isChecked,
-                            when(habitPeriodAddAndEdit.text.toString()){
-                                periods[0] -> Habit.Period.ANHOUR
-                                periods[1] -> Habit.Period.ADAY
-                                periods[2] -> Habit.Period.AWEEK
-                                periods[3] -> Habit.Period.AMMONTH
-                                periods[4] -> Habit.Period.ANYEAR
-                                else -> Habit.Period.NOPERIOD
+                            when (habitPeriodAddAndEdit.text.toString()) {
+                                periods[0] -> HabitRoom.Period.ANHOUR
+                                periods[1] -> HabitRoom.Period.ADAY
+                                periods[2] -> HabitRoom.Period.AWEEK
+                                periods[3] -> HabitRoom.Period.AMONTH
+                                periods[4] -> HabitRoom.Period.ANYEAR
+                                else -> HabitRoom.Period.NOPERIOD
                             },
                             "#757de8", //TODO color picker
-                            if(habitDoneAddEdit.text.toString() == ""){
+                            if (habitDoneAddEdit.text.toString() == "") {
                                 0
-                            }else{
+                            } else {
                                 habitDoneAddEdit.text?.toString()?.toInt()
                             }
                         )
 
-
-
-                        viewModelHabits.replaceHabit(habitToEdit, newHabit)
+                        viewModelRoom.update(newHabit)
 
                         it.hideKeyboard()
                         Navigation.findNavController(requireView()).popBackStack()
 
                     }
 
-                }
-                else //Добавление
+                } else //Добавление
                 {
                     init()
 
                     addAndEditFab.setOnClickListener {
-                        val newHabit = Habit(
+                        val newHabit = HabitRoom(
+                            null,
                             habitNameAddAndEdit.text.toString(),
                             habitDescriptionAddAndEdit.text.toString(),
-                            when(habitPriorityAddAndEdit.text.toString()){
-                                priorities[0] -> Habit.Priority.HIGH
-                                priorities[1] -> Habit.Priority.MEDIUM
-                                priorities[2] -> Habit.Priority.LOW
-                                else -> Habit.Priority.NOPRIORITY
+                            when (habitPriorityAddAndEdit.text.toString()) {
+                                priorities[0] -> HabitRoom.Priority.HIGH
+                                priorities[1] -> HabitRoom.Priority.MEDIUM
+                                priorities[2] -> HabitRoom.Priority.LOW
+                                else -> HabitRoom.Priority.NOPRIORITY
                             },
                             radioButtonGood.isChecked,
-                            when(habitPeriodAddAndEdit.text.toString()){
-                                periods[0] -> Habit.Period.ANHOUR
-                                periods[1] -> Habit.Period.ADAY
-                                periods[2] -> Habit.Period.AWEEK
-                                periods[3] -> Habit.Period.AMMONTH
-                                periods[4] -> Habit.Period.ANYEAR
-                                else -> Habit.Period.NOPERIOD
+                            when (habitPeriodAddAndEdit.text.toString()) {
+                                periods[0] -> HabitRoom.Period.ANHOUR
+                                periods[1] -> HabitRoom.Period.ADAY
+                                periods[2] -> HabitRoom.Period.AWEEK
+                                periods[3] -> HabitRoom.Period.AMONTH
+                                periods[4] -> HabitRoom.Period.ANYEAR
+                                else -> HabitRoom.Period.NOPERIOD
                             },
                             "#757de8", //TODO color picker
-                            if(habitDoneAddEdit.text.toString() == ""){
+                            if (habitDoneAddEdit.text.toString() == "") {
                                 0
-                            }else{
+                            } else {
                                 habitDoneAddEdit.text?.toString()?.toInt()
                             }
                         )
 
-
-                        viewModelHabits.addHabit(newHabit)
+                        viewModelRoom.insert(newHabit)
 
                         it.hideKeyboard()
                         Navigation.findNavController(requireView()).popBackStack()
 
                     }
                 }
-            }
-            else //Если произошла смена конфига
+            } else //Если произошла смена конфига
             {
                 val savedHabit = viewModelAddEdit.getSavedHabit().value
 
                 if (savedHabit != null) {
-                    habitPriorityAddAndEdit(when(savedHabit.priority){
-                        Habit.Priority.HIGH -> priorities[0]
-                        Habit.Priority.MEDIUM -> priorities[1]
-                        Habit.Priority.LOW -> priorities[2]
-                        Habit.Priority.NOPRIORITY -> ""
-                    })
+                    habitPriorityAddAndEdit(
+                        when (savedHabit.priority) {
+                            HabitRoom.Priority.HIGH -> priorities[0]
+                            HabitRoom.Priority.MEDIUM -> priorities[1]
+                            HabitRoom.Priority.LOW -> priorities[2]
+                            HabitRoom.Priority.NOPRIORITY -> ""
+                        }
+                    )
 
-                    habitPeriodAddAndEdit(when(savedHabit.period){
-                        Habit.Period.ANHOUR -> periods[0]
-                        Habit.Period.ADAY -> periods[1]
-                        Habit.Period.AWEEK -> periods[2]
-                        Habit.Period.AMMONTH -> periods[3]
-                        Habit.Period.ANYEAR -> periods[4]
-                        Habit.Period.NOPERIOD -> ""
-                    })
+                    habitPeriodAddAndEdit(
+                        when (savedHabit.period) {
+                            HabitRoom.Period.ANHOUR -> periods[0]
+                            HabitRoom.Period.ADAY -> periods[1]
+                            HabitRoom.Period.AWEEK -> periods[2]
+                            HabitRoom.Period.AMONTH -> periods[3]
+                            HabitRoom.Period.ANYEAR -> periods[4]
+                            HabitRoom.Period.NOPERIOD -> ""
+                        }
+                    )
 
                     habitNameAddAndEdit.setText(savedHabit.name)
                     habitDescriptionAddAndEdit.setText(savedHabit.description)
@@ -196,23 +199,24 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
                         addAndEditFab.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_check_24)) //Если редактирование
 
                     addAndEditFab.setOnClickListener {
-                        val newHabit = Habit(
+                        val newHabit = HabitRoom(
+                            null,
                             habitNameAddAndEdit.text.toString(),
                             habitDescriptionAddAndEdit.text.toString(),
-                            when(habitPriorityAddAndEdit.text.toString()){
-                                priorities[0] -> Habit.Priority.HIGH
-                                priorities[1] -> Habit.Priority.MEDIUM
-                                priorities[2] -> Habit.Priority.LOW
-                                else -> Habit.Priority.NOPRIORITY
+                            when (habitPriorityAddAndEdit.text.toString()) {
+                                priorities[0] -> HabitRoom.Priority.HIGH
+                                priorities[1] -> HabitRoom.Priority.MEDIUM
+                                priorities[2] -> HabitRoom.Priority.LOW
+                                else -> HabitRoom.Priority.NOPRIORITY
                             },
                             radioButtonGood.isChecked,
-                            when(habitPeriodAddAndEdit.text.toString()){
-                                periods[0] -> Habit.Period.ANHOUR
-                                periods[1] -> Habit.Period.ADAY
-                                periods[2] -> Habit.Period.AWEEK
-                                periods[3] -> Habit.Period.AMMONTH
-                                periods[4] -> Habit.Period.ANYEAR
-                                else -> Habit.Period.NOPERIOD
+                            when (habitPeriodAddAndEdit.text.toString()) {
+                                periods[0] -> HabitRoom.Period.ANHOUR
+                                periods[1] -> HabitRoom.Period.ADAY
+                                periods[2] -> HabitRoom.Period.AWEEK
+                                periods[3] -> HabitRoom.Period.AMONTH
+                                periods[4] -> HabitRoom.Period.ANYEAR
+                                else -> HabitRoom.Period.NOPERIOD
                             },
                             "#757de8", //TODO color picker
                             if (habitDoneAddEdit.text.toString() == "") {
@@ -224,9 +228,10 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
 
 
                         if (habitToEdit != null) { //Редактирование
-                            viewModelHabits.replaceHabit(habitToEdit, newHabit)
+                            newHabit.id = habitToEdit.id
+                            viewModelRoom.update(newHabit)
                         } else { //Добавление
-                            viewModelHabits.addHabit(newHabit)
+                            viewModelRoom.insert(newHabit)
                         }
 
                         it.hideKeyboard()
@@ -244,23 +249,24 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
     override fun onStop() {
         super.onStop()
         //При смене конфига записываем в VM уже введеную на экране инфу
-        val habit = Habit(
+        val habit = HabitRoom(
+            AddEditFragmentArgs.fromBundle(requireArguments()).habitRoomToEdit?.id,
             habitNameAddAndEdit.text.toString(),
             habitDescriptionAddAndEdit.text.toString(),
-            when(habitPriorityAddAndEdit.text.toString()){
-                priorities[0] -> Habit.Priority.HIGH
-                priorities[1] -> Habit.Priority.MEDIUM
-                priorities[2] -> Habit.Priority.LOW
-                else -> Habit.Priority.NOPRIORITY
+            when (habitPriorityAddAndEdit.text.toString()) {
+                priorities[0] -> HabitRoom.Priority.HIGH
+                priorities[1] -> HabitRoom.Priority.MEDIUM
+                priorities[2] -> HabitRoom.Priority.LOW
+                else -> HabitRoom.Priority.NOPRIORITY
             },
             radioButtonGood.isChecked,
-            when(habitPeriodAddAndEdit.text.toString()){
-                periods[0] -> Habit.Period.ANHOUR
-                periods[1] -> Habit.Period.ADAY
-                periods[2] -> Habit.Period.AWEEK
-                periods[3] -> Habit.Period.AMMONTH
-                periods[4] -> Habit.Period.ANYEAR
-                else -> Habit.Period.NOPERIOD
+            when (habitPeriodAddAndEdit.text.toString()) {
+                periods[0] -> HabitRoom.Period.ANHOUR
+                periods[1] -> HabitRoom.Period.ADAY
+                periods[2] -> HabitRoom.Period.AWEEK
+                periods[3] -> HabitRoom.Period.AMONTH
+                periods[4] -> HabitRoom.Period.ANYEAR
+                else -> HabitRoom.Period.NOPERIOD
             },
             "#757de8", //TODO color picker
             if (habitDoneAddEdit.text.toString() == "") {
@@ -290,7 +296,7 @@ private operator fun AutoCompleteTextView.invoke(priority: String) {
     setText(priority)
 }
 
-fun View.hideKeyboard(){
+fun View.hideKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(windowToken,0)
+    imm.hideSoftInputFromWindow(windowToken, 0)
 }

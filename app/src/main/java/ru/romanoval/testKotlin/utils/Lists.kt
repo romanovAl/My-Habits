@@ -1,14 +1,15 @@
 package ru.romanoval.testKotlin.utils
 
-import ru.romanoval.testKotlin.model.Habit
+import ru.romanoval.testKotlin.data.model.HabitRoom
+
 
 object Lists {
 
     val priorities = listOf(
-        Habit.Priority.HIGH.priority, Habit.Priority.MEDIUM.priority,
-        Habit.Priority.LOW.priority)
+        HabitRoom.Priority.HIGH.priority, HabitRoom.Priority.MEDIUM.priority,
+        HabitRoom.Priority.LOW.priority)
     val periods = listOf(
-        Habit.Period.ANHOUR.period, Habit.Period.ADAY.period
-        , Habit.Period.AWEEK.period, Habit.Period.AMMONTH.period, Habit.Period.ANYEAR.period)
+        HabitRoom.Period.ANHOUR.period, HabitRoom.Period.ADAY.period
+        , HabitRoom.Period.AWEEK.period, HabitRoom.Period.AMONTH.period, HabitRoom.Period.ANYEAR.period)
 
 }

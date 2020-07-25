@@ -8,13 +8,13 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.main_recycler_element.view.*
-import ru.romanoval.testKotlin.model.Habit
 import ru.romanoval.testKotlin.R
+import ru.romanoval.testKotlin.data.model.HabitRoom
 import ru.romanoval.testKotlin.fragments.MainFragmentDirections
 import ru.romanoval.testKotlin.utils.Lists
 
 
-class RecyclerAdapter(private var habits: ArrayList<Habit>) :
+class RecyclerAdapter(private var habits: ArrayList<HabitRoom>) :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
@@ -33,19 +33,10 @@ class RecyclerAdapter(private var habits: ArrayList<Habit>) :
         holder.bind(habits[position], position)
     }
 
-    fun addItem(hab: Habit) {
-        habits.add(hab)
-    }
-
-    fun changeItem(hab: Habit, pos: Int) {
-        habits[pos] = hab
-        notifyItemChanged(pos)
-    }
-
     inner class ViewHolder(override val containerView: View) :
         RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-        fun bind(habit: Habit, position: Int) {
+        fun bind(habit: HabitRoom, position: Int) {
 
             containerView.run {
 
@@ -54,7 +45,7 @@ class RecyclerAdapter(private var habits: ArrayList<Habit>) :
                     val action =
                         MainFragmentDirections.actionMainFragment2ToAddEditFragment("Редактирование привычки")
 
-                    action.habitToEdit = habit
+                    action.habitRoomToEdit = habit
 
                     Navigation.findNavController(it).navigate(action)
                 }
@@ -63,18 +54,18 @@ class RecyclerAdapter(private var habits: ArrayList<Habit>) :
                 habitNameRecyclerElement.text = habit.name
                 habitDescriptionRecyclerElement.text = habit.description
                 habitPeriodRecyclerElement.text = when(habit.period){
-                    Habit.Period.ANHOUR -> periods[0]
-                    Habit.Period.ADAY -> periods[1]
-                    Habit.Period.AWEEK -> periods[2]
-                    Habit.Period.AMMONTH -> periods[3]
-                    Habit.Period.ANYEAR -> periods[4]
-                    Habit.Period.NOPERIOD -> ""
+                    HabitRoom.Period.ANHOUR -> periods[0]
+                    HabitRoom.Period.ADAY -> periods[1]
+                    HabitRoom.Period.AWEEK -> periods[2]
+                    HabitRoom.Period.AMONTH -> periods[3]
+                    HabitRoom.Period.ANYEAR -> periods[4]
+                    HabitRoom.Period.NOPERIOD -> ""
                 }
                 habitPriorityRecyclerElement.text = when(habit.priority){
-                    Habit.Priority.HIGH -> priorities[0]
-                    Habit.Priority.MEDIUM -> priorities[1]
-                    Habit.Priority.LOW -> priorities[2]
-                    Habit.Priority.NOPRIORITY -> ""
+                    HabitRoom.Priority.HIGH -> priorities[0]
+                    HabitRoom.Priority.MEDIUM -> priorities[1]
+                    HabitRoom.Priority.LOW -> priorities[2]
+                    HabitRoom.Priority.NOPRIORITY -> ""
                 }
 
                 habitTypeRecyclerElement.text = if (habit.type) {

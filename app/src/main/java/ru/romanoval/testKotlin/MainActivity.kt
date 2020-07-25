@@ -2,9 +2,7 @@ package ru.romanoval.testKotlin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -13,8 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet_filter_bad.*
 import kotlinx.android.synthetic.main.bottom_sheet_filter_good.*
-import ru.romanoval.testKotlin.ui.HabitsViewModel
-import ru.romanoval.testKotlin.utils.InjectorUtils
+
 
 
 class MainActivity : AppCompatActivity() {
