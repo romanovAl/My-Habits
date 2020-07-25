@@ -1,8 +1,38 @@
 <resources>
     <string name="app_name">My habits</string>
+    <string name="find_and_sort">Find and sort</string>
+    <string name="filter_type">Filter type</string>
+    <string name="search">Search</string>
+    <string name="app_my_habits">Application \"My Habits\"</string>
+    <string name="author_alex_romanov">Author - Alex Romanov</string>
+    <string name="github" translatable="false">GitHub - https://github.com/romanovAl</string>
+    <string name="email">Email - ml.naslednik2001@gmail.com</string>
+    <string name="habit_name">Habit name</string>
+    <string name="description">Description</string>
+    <string name="priority">Priority</string>
+    <string name="good_habit">Good</string>
+    <string name="bad_habit">Bad</string>
+    <string name="period">Period</string>
+    <string name="Done">Done</string>
+    <string name="period_is_not_chosen">Period is not selected</string>
+    <string name="priority_is_not_chosen">Priority is not selected</string>
+    <string name="times">times</string>
+    <string name="by_priority">By priority</string>
+    <string name="by_period">By period</string>
+    <string name="by_quantity">By quantity</string>
+    <string name="without_filter">Without filter</string>
+    <string name="high_priorirty">High</string>
+    <string name="medium_priority">Medium</string>
+    <string name="low_priority">Low</string>
+    <string name="period_anhour">Per hour</string>
+    <string name="period_aday">Per day</string>
+    <string name="period_aweek">Per week</string>
+    <string name="period_amonth">Per month</string>
+    <string name="period_anyear">Per year</string>
+    <string name="label_edit">Editing habit</string>
+    <string name="label_add">Adding habit</string>
+    <string name="view_pager_good">Good Habits</string>
+    <string name="view_pager_bad">Bad habits</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="open_string">Open</string>
-    <string name="close_string">Close</string>
 
 </resources>

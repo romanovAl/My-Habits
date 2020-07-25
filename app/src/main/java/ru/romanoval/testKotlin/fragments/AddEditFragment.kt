@@ -25,8 +25,7 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
 
     private lateinit var viewModelRoom: HabitsRoomViewModel
 
-    private val priorities = Lists.priorities
-    private val periods = Lists.periods
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +38,9 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val habitToEdit = AddEditFragmentArgs.fromBundle(requireArguments()).habitRoomToEdit
+
+        val priorities = Lists.getPriorities(requireContext())
+        val periods = Lists.getPeriods(requireContext())
 
 
         //Если произойдет смена конфигурации, сохранившаяся информация запишется в VM и здесь мы её заберем
@@ -248,6 +250,10 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
 
     override fun onStop() {
         super.onStop()
+
+        val priorities = Lists.getPriorities(requireContext())
+        val periods = Lists.getPeriods(requireContext())
+
         //При смене конфига записываем в VM уже введеную на экране инфу
         val habit = HabitRoom(
             AddEditFragmentArgs.fromBundle(requireArguments()).habitRoomToEdit?.id,
@@ -280,6 +286,10 @@ class AddEditFragment : Fragment(R.layout.fragment_add_edit) {
     }
 
     private fun init() {
+
+        val priorities = Lists.getPriorities(requireContext())
+        val periods = Lists.getPeriods(requireContext())
+
         val adapterPriority = context?.let { ArrayAdapter(it, R.layout.list_item, priorities) }
         (habitPriorityInputLayout.editText as? AutoCompleteTextView)?.setAdapter(adapterPriority)
         habitPriorityAddAndEdit.keyListener = null

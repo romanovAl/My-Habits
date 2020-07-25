@@ -18,7 +18,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         viewPager2.adapter = ViewPagerAdapter(this)
-        val tabNames = listOf("Хорошие", "Плохие")
+        val tabNames = listOf(
+            this.resources.getString(R.string.view_pager_good),
+            this.resources.getString(R.string.view_pager_bad)
+        )
 
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             tab.text = tabNames[position]

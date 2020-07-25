@@ -1,5 +1,6 @@
 package ru.romanoval.testKotlin.adapters
 
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -14,12 +15,12 @@ import ru.romanoval.testKotlin.fragments.MainFragmentDirections
 import ru.romanoval.testKotlin.utils.Lists
 
 
-class RecyclerAdapter(private var habits: ArrayList<HabitRoom>) :
+class RecyclerAdapter(private var habits: ArrayList<HabitRoom>, context: Context) :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
-    private val priorities = Lists.priorities
-    private val periods = Lists.periods
+    private val priorities = Lists.getPriorities(context)
+    private val periods = Lists.getPeriods(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -43,7 +44,7 @@ class RecyclerAdapter(private var habits: ArrayList<HabitRoom>) :
                 constraintMainRecyclerElement.setOnClickListener {
 
                     val action =
-                        MainFragmentDirections.actionMainFragment2ToAddEditFragment("Редактирование привычки")
+                        MainFragmentDirections.actionMainFragment2ToAddEditFragment(context.resources.getString(R.string.label_edit))
 
                     action.habitRoomToEdit = habit
 
@@ -59,22 +60,22 @@ class RecyclerAdapter(private var habits: ArrayList<HabitRoom>) :
                     HabitRoom.Period.AWEEK -> periods[2]
                     HabitRoom.Period.AMONTH -> periods[3]
                     HabitRoom.Period.ANYEAR -> periods[4]
-                    HabitRoom.Period.NOPERIOD -> ""
+                    HabitRoom.Period.NOPERIOD -> R.string.period_is_not_chosen.toString()
                 }
                 habitPriorityRecyclerElement.text = when(habit.priority){
-                    HabitRoom.Priority.HIGH -> priorities[0]
-                    HabitRoom.Priority.MEDIUM -> priorities[1]
-                    HabitRoom.Priority.LOW -> priorities[2]
-                    HabitRoom.Priority.NOPRIORITY -> ""
+                    HabitRoom.Priority.HIGH -> "${priorities[0]} ${this.resources.getString(R.string.priority)}"
+                    HabitRoom.Priority.MEDIUM -> "${priorities[1]} ${this.resources.getString(R.string.priority)}"
+                    HabitRoom.Priority.LOW -> "${priorities[2]} ${this.resources.getString(R.string.priority)}"
+                    HabitRoom.Priority.NOPRIORITY -> this.resources.getString(R.string.priority_is_not_chosen)
                 }
 
                 habitTypeRecyclerElement.text = if (habit.type) {
-                    "Хорошая"
+                    this.resources.getText(R.string.good_habit)
                 } else {
-                    "Плохая"
+                    this.resources.getText(R.string.bad_habit)
                 }
                 habitNameRecyclerElement.setBackgroundColor(Color.parseColor(habit.color))
-                habitTimesRecyclerElement.text = "${habit.times.toString()} раз"
+                habitTimesRecyclerElement.text = "${habit.times?.toString() ?: ""} ${this.resources.getString(R.string.times)}"
             }
 
 

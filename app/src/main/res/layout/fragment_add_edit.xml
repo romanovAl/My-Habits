@@ -19,7 +19,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:hint="Название привычки"
+            android:hint="@string/habit_name"
             android:textColorHint="@color/colorPrimaryCustom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:hint="Описание"
+            android:hint="@string/description"
             android:textColorHint="@color/colorPrimaryCustom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="32dp"
-            android:hint="Приоритет"
+            android:hint="@string/priority"
             android:textColorHint="@color/colorPrimaryCustom"
             app:layout_constraintBottom_toBottomOf="@+id/radioGroup"
             app:layout_constraintEnd_toStartOf="@+id/radioGroup"
@@ -93,14 +93,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_mono"
-                android:text="Хорошая" />
+                android:text="@string/good_habit" />
 
             <RadioButton
                 android:id="@+id/radioButtonBad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_mono"
-                android:text="Плохая" />
+                android:text="@string/bad_habit" />
         </RadioGroup>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:hint="Периодичность"
+            android:hint="@string/period"
             android:textColorHint="@color/colorPrimaryCustom"
             app:layout_constraintEnd_toEndOf="@+id/habitPriorityInputLayout"
             app:layout_constraintStart_toStartOf="parent"
@@ -131,7 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:hint="Выполнено"
+            android:hint="@string/Done"
             android:textColorHint="@color/colorPrimaryCustom"
             app:layout_constraintBottom_toBottomOf="@+id/habitPeriodInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,8 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/habitDoneInputLayout"
-            app:srcCompat="@drawable/ic_baseline_add_24" />
+            app:srcCompat="@drawable/ic_baseline_add_24"
+            android:focusable="true" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

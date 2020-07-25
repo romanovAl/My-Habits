@@ -18,6 +18,7 @@ import ru.romanoval.testKotlin.adapters.RecyclerAdapter
 import ru.romanoval.testKotlin.R
 import ru.romanoval.testKotlin.data.model.HabitRoom
 import ru.romanoval.testKotlin.ui.HabitsRoomViewModel
+import ru.romanoval.testKotlin.utils.Lists
 
 class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
 
@@ -48,13 +49,12 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
 
     private fun initUi() {
 
-        val filterTypes =
-            listOf("По приоритету", "По периодичности", "По количеству", "Без фильтра")
+        val filterTypes = Lists.getFilterTypes(requireContext())
 
         val viewModelRoom = ViewModelProvider(this).get(HabitsRoomViewModel::class.java)
 
         viewModelRoom.habits.observe(viewLifecycleOwner, Observer { habits ->
-            adapter = RecyclerAdapter(habits.filter { !it.type } as ArrayList<HabitRoom>)
+            adapter = RecyclerAdapter(habits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
             recyclerBadHabits.adapter = adapter
 
             filterFindBad.addTextChangedListener(object : TextWatcher {
@@ -67,7 +67,7 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
                         } as ArrayList<HabitRoom>
 
                         val adapter =
-                            RecyclerAdapter(filteredHabits.filter { !it.type } as ArrayList<HabitRoom>)
+                            RecyclerAdapter(filteredHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
                         recyclerBadHabits?.adapter = adapter
                     }
                 }
@@ -85,19 +85,19 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
                     filterTypes[0] -> { //Сортировка по приоритету
                         sortedHabits.sortByDescending { it.priority.intPriority }
                         val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
+                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
                         recyclerBadHabits?.adapter = adapter
                     }
                     filterTypes[1] -> { //Сортировка по периодичности
                         sortedHabits.sortByDescending { it.period.intPeriod }
                         val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
+                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
                         recyclerBadHabits?.adapter = adapter
                     }
                     filterTypes[2] -> { //Сортировка по количеству раз
                         sortedHabits.sortByDescending { it.times }
                         val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
+                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
                         recyclerBadHabits?.adapter = adapter
                     }
                 }
@@ -109,19 +109,19 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
                     filterTypes[0] -> { //Сортировка по приоритету
                         sortedHabits.sortBy { it.priority.intPriority }
                         val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
+                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
                         recyclerBadHabits?.adapter = adapter
                     }
                     filterTypes[1] -> { //Сортировка по периодичности
                         sortedHabits.sortBy { it.period.intPeriod }
                         val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
+                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
                         recyclerBadHabits?.adapter = adapter
                     }
                     filterTypes[2] -> { //Сортировка по количеству раз
                         sortedHabits.sortBy { it.times }
                         val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
+                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
                         recyclerBadHabits?.adapter = adapter
                     }
                 }
@@ -143,7 +143,7 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
 
         fabBadHabits.setOnClickListener {
             val action =
-                MainFragmentDirections.actionMainFragment2ToAddEditFragment("Добавление привычки")
+                MainFragmentDirections.actionMainFragment2ToAddEditFragment(this.resources.getString(R.string.label_add))
             Navigation.findNavController(curView).navigate(action)
         }
 
