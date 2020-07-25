@@ -26,7 +26,7 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
         fun newInstance(name: String): FragmentBadHabits = FragmentBadHabits()
     }
 
-    private var adapter: RecyclerAdapter? = null
+    private lateinit var adapter: RecyclerAdapter
     private lateinit var curView: View
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,9 +66,7 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
                             it.name.contains(p0.toString(), ignoreCase = true)
                         } as ArrayList<HabitRoom>
 
-                        val adapter =
-                            RecyclerAdapter(filteredHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
-                        recyclerBadHabits?.adapter = adapter
+                        adapter.updateHabits(filteredHabits.filter { !it.type } as ArrayList<HabitRoom>)
                     }
                 }
 
@@ -84,21 +82,15 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
 
                     filterTypes[0] -> { //Сортировка по приоритету
                         sortedHabits.sortByDescending { it.priority.intPriority }
-                        val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
-                        recyclerBadHabits?.adapter = adapter
+                        adapter.updateHabits(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
                     }
                     filterTypes[1] -> { //Сортировка по периодичности
                         sortedHabits.sortByDescending { it.period.intPeriod }
-                        val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
-                        recyclerBadHabits?.adapter = adapter
+                        adapter.updateHabits(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
                     }
                     filterTypes[2] -> { //Сортировка по количеству раз
                         sortedHabits.sortByDescending { it.times }
-                        val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
-                        recyclerBadHabits?.adapter = adapter
+                        adapter.updateHabits(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
                     }
                 }
             }
@@ -108,21 +100,15 @@ class FragmentBadHabits : Fragment(R.layout.fragment_bad_habits) {
                 when (filterTypeSpinnerBad.text.toString()) {
                     filterTypes[0] -> { //Сортировка по приоритету
                         sortedHabits.sortBy { it.priority.intPriority }
-                        val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
-                        recyclerBadHabits?.adapter = adapter
+                        adapter.updateHabits(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
                     }
                     filterTypes[1] -> { //Сортировка по периодичности
                         sortedHabits.sortBy { it.period.intPeriod }
-                        val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
-                        recyclerBadHabits?.adapter = adapter
+                        adapter.updateHabits(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
                     }
                     filterTypes[2] -> { //Сортировка по количеству раз
                         sortedHabits.sortBy { it.times }
-                        val adapter =
-                            RecyclerAdapter(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>, requireContext())
-                        recyclerBadHabits?.adapter = adapter
+                        adapter.updateHabits(sortedHabits.filter { !it.type } as ArrayList<HabitRoom>)
                     }
                 }
             }

@@ -28,6 +28,11 @@ class RecyclerAdapter(private var habits: ArrayList<HabitRoom>, context: Context
         return ViewHolder((inflater.inflate(R.layout.main_recycler_element, parent, false)))
     }
 
+    fun updateHabits(newList: ArrayList<HabitRoom>){
+        habits = newList
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int = habits.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

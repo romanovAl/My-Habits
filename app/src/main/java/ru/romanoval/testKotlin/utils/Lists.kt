@@ -10,7 +10,7 @@ object Lists {
         return listOf(
             context.resources.getString(R.string.high_priorirty),
             context.resources.getString(R.string.medium_priority),
-            context.resources.getString(R.string.high_priorirty)
+            context.resources.getString(R.string.low_priority)
         )
     }
 
