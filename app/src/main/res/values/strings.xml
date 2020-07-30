@@ -13,7 +13,7 @@
     <string name="good_habit">Good</string>
     <string name="bad_habit">Bad</string>
     <string name="period">Period</string>
-    <string name="Done">Done</string>
+    <string name="Count">Count</string>
     <string name="period_is_not_chosen">Period is not selected</string>
     <string name="priority_is_not_chosen">Priority is not selected</string>
     <string name="times">times</string>
@@ -33,6 +33,7 @@
     <string name="label_add">Adding habit</string>
     <string name="view_pager_good">Good Habits</string>
     <string name="view_pager_bad">Bad habits</string>
-
+    <string name="delete_habit">delete habit</string>
+    <string name="no_internet_connection">No internet connection!</string>
 
 </resources>

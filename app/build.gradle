@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'androidx.navigation.safeargs'
-apply plugin: "kotlin-kapt"
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -65,8 +65,14 @@ dependencies {
     implementation "androidx.room:room-runtime:2.3.0-alpha02"
     kapt "androidx.room:room-compiler:2.3.0-alpha02"
     implementation "androidx.room:room-ktx:2.3.0-alpha02"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
 
-
+    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
+    implementation "com.google.code.gson:gson:2.8.5"
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    implementation "com.squareup.okhttp3:okhttp:4.5.0"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
 
 
     testImplementation 'junit:junit:4.12'

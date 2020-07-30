@@ -3,22 +3,22 @@ package ru.romanoval.testKotlin.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.romanoval.testKotlin.data.model.HabitRoom
+import ru.romanoval.testKotlin.data.model.HabitJson
 
 class AddEditFragmentViewModel : ViewModel() {
 
-    private var mutableSavedEdit: HabitRoom? = null
-    private var savedEdit = MutableLiveData<HabitRoom?>()
+    private var mutableSavedEdit: HabitJson? = null
+    private var savedEdit = MutableLiveData<HabitJson?>()
 
     init {
         savedEdit.value = mutableSavedEdit
     }
 
-    fun setSavedHabit(habit: HabitRoom){
+    fun setSavedHabit(habit: HabitJson){
         mutableSavedEdit = habit
         savedEdit.value = mutableSavedEdit
     }
 
-    fun getSavedHabit() = savedEdit as LiveData<HabitRoom?>
+    fun getSavedHabit() = savedEdit as LiveData<HabitJson?>
 
 }

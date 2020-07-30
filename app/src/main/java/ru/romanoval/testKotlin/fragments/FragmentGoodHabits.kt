@@ -1,13 +1,21 @@
 package ru.romanoval.testKotlin.fragments
 
+import android.content.Context
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,8 +25,8 @@ import kotlinx.android.synthetic.main.bottom_sheet_filter_good.*
 import kotlinx.android.synthetic.main.fragment_good_habits.*
 import ru.romanoval.testKotlin.adapters.RecyclerAdapter
 import ru.romanoval.testKotlin.R
-import ru.romanoval.testKotlin.data.model.HabitRoom
-import ru.romanoval.testKotlin.ui.HabitsRoomViewModel
+import ru.romanoval.testKotlin.ui.ApiViewModel
+import ru.romanoval.testKotlin.data.model.HabitJson
 import ru.romanoval.testKotlin.utils.Lists
 
 class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
@@ -29,6 +37,53 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
 
     private lateinit var adapter: RecyclerAdapter
     private lateinit var curView: View
+    private lateinit var apiViewModel: ApiViewModel
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.toolbar_menu, menu)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        val cm = requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = cm.activeNetwork
+        val netCap = cm.getNetworkCapabilities(activeNetwork)
+
+        val isConnected = (netCap != null && netCap.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
+
+        if (item.itemId == R.id.uploadToServer) {
+            return if(isConnected){
+                apiViewModel.uploadHabitsToApi()
+                true
+            }else{
+                Toast.makeText(requireContext(),
+                    this.resources.getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+                true
+            }
+
+        } else if (item.itemId == R.id.downloadFromServer) {
+            return if(isConnected){
+                apiViewModel.downloadHabitsFromApi()
+                true
+            }else{
+                Toast.makeText(requireContext(),
+                    this.resources.getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+                true
+            }
+        }
+        return true
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        setHasOptionsMenu(true)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,8 +95,6 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
 
     override fun onPause() {
         super.onPause()
-        filterFindGood.text = null
-        filterTypeSpinnerGood.text = null
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetFilterGood)
         if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -50,12 +103,28 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
 
     private fun initUi() {
 
+
         val filterTypes = Lists.getFilterTypes(requireContext())
 
-        val viewModelRoom = ViewModelProvider(this).get(HabitsRoomViewModel::class.java)
+        apiViewModel = ViewModelProvider(this).get(ApiViewModel::class.java)
 
-        viewModelRoom.habits.observe(viewLifecycleOwner, Observer { habits ->
-            adapter = RecyclerAdapter(habits.filter { it.type } as ArrayList<HabitRoom>, requireContext())
+        apiViewModel.isDataLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+
+            if(isLoading!!){
+                progressBarGood.visibility = View.VISIBLE
+                recyclerGoodHabits.visibility = View.INVISIBLE
+                bottomSheetFilterGood.visibility = View.INVISIBLE
+            }else{
+                progressBarGood.visibility = View.INVISIBLE
+                recyclerGoodHabits.visibility = View.VISIBLE
+                bottomSheetFilterGood.visibility = View.VISIBLE
+            }
+        })
+
+
+        apiViewModel.habits.observe(viewLifecycleOwner, Observer { habits ->
+            adapter = RecyclerAdapter(habits.filter { it.type.toBoolean() } as ArrayList<HabitJson>,
+                requireContext())
             recyclerGoodHabits.adapter = adapter
 
             filterFindGood.addTextChangedListener(object : TextWatcher { //Поиск по имени
@@ -63,11 +132,11 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
 
                     if (p0 != null) {
 
-                        val filteredHabits: ArrayList<HabitRoom> = habits.filter {
-                            it.name.contains(p0.toString(), ignoreCase = true)
-                        } as ArrayList<HabitRoom>
+                        val filteredHabits: ArrayList<HabitJson> = habits.filter {
+                            it.title.contains(p0.toString(), ignoreCase = true)
+                        } as ArrayList<HabitJson>
 
-                        adapter.updateHabits(filteredHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        adapter.updateHabits(filteredHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                 }
 
@@ -78,38 +147,38 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
             })
 
             filterSortUp.setOnClickListener { //Сортировка вверх
-                val sortedHabits = habits as ArrayList<HabitRoom>
+                val sortedHabits = habits as ArrayList<HabitJson>
                 when (filterTypeSpinnerGood.text.toString()) {
 
                     filterTypes[0] -> { //Сортировка по приоритету
-                        sortedHabits.sortByDescending { it.priority.intPriority }
-                        adapter.updateHabits(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        sortedHabits.sortByDescending { it.priority }
+                        adapter.updateHabits(sortedHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                     filterTypes[1] -> { //Сортировка по периодичности
-                        sortedHabits.sortByDescending { it.period.intPeriod }
-                        adapter.updateHabits(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        sortedHabits.sortByDescending { it.frequency }
+                        adapter.updateHabits(sortedHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                     filterTypes[2] -> { //Сортировка по количеству раз
-                        sortedHabits.sortByDescending { it.times }
-                        adapter.updateHabits(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        sortedHabits.sortByDescending { it.count }
+                        adapter.updateHabits(sortedHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                 }
             }
 
             filterSortDown.setOnClickListener {//Сортировка вниз
-                val sortedHabits = habits as ArrayList<HabitRoom>
+                val sortedHabits = habits as ArrayList<HabitJson>
                 when (filterTypeSpinnerGood.text.toString()) {
                     filterTypes[0] -> { //Сортировка по приоритету
-                        sortedHabits.sortBy { it.priority.intPriority }
-                        adapter.updateHabits(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        sortedHabits.sortBy { it.priority }
+                        adapter.updateHabits(sortedHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                     filterTypes[1] -> { //Сортировка по периодичности
-                        sortedHabits.sortBy { it.period.intPeriod }
-                        adapter.updateHabits(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        sortedHabits.sortBy { it.frequency }
+                        adapter.updateHabits(sortedHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                     filterTypes[2] -> { //Сортировка по количеству раз
-                        sortedHabits.sortBy { it.times }
-                        adapter.updateHabits(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        sortedHabits.sortBy { it.count }
+                        adapter.updateHabits(sortedHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                 }
             }
@@ -117,12 +186,11 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
             filterTypeSpinnerGood.onItemClickListener =
                 AdapterView.OnItemClickListener() { _, _, p, _ ->
                     if (p == 3) {
-                        val sortedHabits = habits as ArrayList<HabitRoom>
-                        sortedHabits.sortBy { it.id }
-                        adapter.updateHabits(sortedHabits.filter { it.type } as ArrayList<HabitRoom>)
+                        val sortedHabits = habits as ArrayList<HabitJson>
+                        sortedHabits.sortBy { it.bdId }
+                        adapter.updateHabits(sortedHabits.filter { it.type.toBoolean() } as ArrayList<HabitJson>)
                     }
                 }
-
         })
 
         fabGoodHabits.setColorFilter(Color.argb(255, 255, 255, 255))
@@ -137,6 +205,16 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
             }
         }
 
+        val behavior = BottomSheetBehavior.from(bottomSheetFilterGood)
+
+        bottomSheetFilterGood.viewTreeObserver.addOnGlobalLayoutListener (object: ViewTreeObserver.OnGlobalLayoutListener{
+            override fun onGlobalLayout() {
+                bottomSheetFilterGood.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val hidden = bottomSheetFilterGood.getChildAt(1)
+                behavior.peekHeight = hidden.top
+            }
+        })
+
         fabGoodHabits.setOnClickListener {
             val action =
                 MainFragmentDirections.actionMainFragment2ToAddEditFragment(
@@ -146,8 +224,12 @@ class FragmentGoodHabits : Fragment(R.layout.fragment_good_habits) {
                 )
             Navigation.findNavController(curView).navigate(action)
         }
-
         filterTypeSpinnerGood.keyListener = null
 
     }
+
+    fun Int.toBoolean(): Boolean {
+        return this == 1
+    }
+
 }
